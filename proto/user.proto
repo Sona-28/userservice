@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+option go_package = "github.com/Sona-28/sample";
+
+package proto;
+
+message AddRequest {
+    string name = 1;
+    string email = 2;
+    string password = 3;
+    string dob = 6;
+    int64 phone = 5;
+}
+
+message AddResponse {
+    string message = 1;
+}
+
+message RoleRequest {
+    string name = 1;
+    string role = 2;
+}
+
+service User{
+    rpc AddUser (AddRequest) returns (AddResponse);
+    rpc AddRole (RoleRequest) returns (AddResponse);   
+}
