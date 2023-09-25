@@ -15,20 +15,25 @@ import (
 
 func initApp(client *mongo.Client) {
 	ctx := context.TODO()
-	mcoll := client.Database(constants.DatabaseName).Collection("users")
-	service := services.NewUserService(ctx, mcoll)
+	usercoll := client.Database(constants.DatabaseName).Collection("users")
+	rolecoll := client.Database(constants.DatabaseName).Collection("roles")
+	service := services.NewUserService(ctx, usercoll, rolecoll)
 	controllers.UserService = service
 }
 
 func main() {
 	fmt.Println("Starting server...")
+	fmt.Println("hello")
 	client, err := config.ConnectDataBase()
 	if err != nil {
+		fmt.Println("Error connecting to database")
 		panic(err)
 	}
+	fmt.Println("Connected to database")
+
 	defer client.Disconnect(context.TODO())
 	initApp(client)
-	lis, err := net.Listen("tcp", ":8080")
+	lis, err := net.Listen("tcp", ":8000")
 	if err != nil {
 		panic(err)
 	}

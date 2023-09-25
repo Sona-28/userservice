@@ -19,7 +19,11 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type UserClient interface {
 	AddUser(ctx context.Context, in *AddRequest, opts ...grpc.CallOption) (*AddResponse, error)
-	AddRole(ctx context.Context, in *RoleRequest, opts ...grpc.CallOption) (*AddResponse, error)
+	UpdateRole(ctx context.Context, in *UpdateRoleRequest, opts ...grpc.CallOption) (*AddResponse, error)
+	ListFeature(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*Role, error)
+	DisableUser(ctx context.Context, in *UserRequest, opts ...grpc.CallOption) (*AddResponse, error)
+	EnableUser(ctx context.Context, in *UserRequest, opts ...grpc.CallOption) (*AddResponse, error)
+	AssociateRole(ctx context.Context, in *RoleRequest, opts ...grpc.CallOption) (*AddResponse, error)
 }
 
 type userClient struct {
@@ -39,9 +43,45 @@ func (c *userClient) AddUser(ctx context.Context, in *AddRequest, opts ...grpc.C
 	return out, nil
 }
 
-func (c *userClient) AddRole(ctx context.Context, in *RoleRequest, opts ...grpc.CallOption) (*AddResponse, error) {
+func (c *userClient) UpdateRole(ctx context.Context, in *UpdateRoleRequest, opts ...grpc.CallOption) (*AddResponse, error) {
 	out := new(AddResponse)
-	err := c.cc.Invoke(ctx, "/proto.User/AddRole", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/proto.User/UpdateRole", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userClient) ListFeature(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*Role, error) {
+	out := new(Role)
+	err := c.cc.Invoke(ctx, "/proto.User/ListFeature", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userClient) DisableUser(ctx context.Context, in *UserRequest, opts ...grpc.CallOption) (*AddResponse, error) {
+	out := new(AddResponse)
+	err := c.cc.Invoke(ctx, "/proto.User/DisableUser", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userClient) EnableUser(ctx context.Context, in *UserRequest, opts ...grpc.CallOption) (*AddResponse, error) {
+	out := new(AddResponse)
+	err := c.cc.Invoke(ctx, "/proto.User/EnableUser", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userClient) AssociateRole(ctx context.Context, in *RoleRequest, opts ...grpc.CallOption) (*AddResponse, error) {
+	out := new(AddResponse)
+	err := c.cc.Invoke(ctx, "/proto.User/AssociateRole", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -53,7 +93,11 @@ func (c *userClient) AddRole(ctx context.Context, in *RoleRequest, opts ...grpc.
 // for forward compatibility
 type UserServer interface {
 	AddUser(context.Context, *AddRequest) (*AddResponse, error)
-	AddRole(context.Context, *RoleRequest) (*AddResponse, error)
+	UpdateRole(context.Context, *UpdateRoleRequest) (*AddResponse, error)
+	ListFeature(context.Context, *ListRequest) (*Role, error)
+	DisableUser(context.Context, *UserRequest) (*AddResponse, error)
+	EnableUser(context.Context, *UserRequest) (*AddResponse, error)
+	AssociateRole(context.Context, *RoleRequest) (*AddResponse, error)
 	mustEmbedUnimplementedUserServer()
 }
 
@@ -64,8 +108,20 @@ type UnimplementedUserServer struct {
 func (UnimplementedUserServer) AddUser(context.Context, *AddRequest) (*AddResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddUser not implemented")
 }
-func (UnimplementedUserServer) AddRole(context.Context, *RoleRequest) (*AddResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method AddRole not implemented")
+func (UnimplementedUserServer) UpdateRole(context.Context, *UpdateRoleRequest) (*AddResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateRole not implemented")
+}
+func (UnimplementedUserServer) ListFeature(context.Context, *ListRequest) (*Role, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListFeature not implemented")
+}
+func (UnimplementedUserServer) DisableUser(context.Context, *UserRequest) (*AddResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DisableUser not implemented")
+}
+func (UnimplementedUserServer) EnableUser(context.Context, *UserRequest) (*AddResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method EnableUser not implemented")
+}
+func (UnimplementedUserServer) AssociateRole(context.Context, *RoleRequest) (*AddResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AssociateRole not implemented")
 }
 func (UnimplementedUserServer) mustEmbedUnimplementedUserServer() {}
 
@@ -98,20 +154,92 @@ func _User_AddUser_Handler(srv interface{}, ctx context.Context, dec func(interf
 	return interceptor(ctx, in, info, handler)
 }
 
-func _User_AddRole_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _User_UpdateRole_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateRoleRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).UpdateRole(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto.User/UpdateRole",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).UpdateRole(ctx, req.(*UpdateRoleRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _User_ListFeature_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).ListFeature(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto.User/ListFeature",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).ListFeature(ctx, req.(*ListRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _User_DisableUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).DisableUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto.User/DisableUser",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).DisableUser(ctx, req.(*UserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _User_EnableUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).EnableUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto.User/EnableUser",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).EnableUser(ctx, req.(*UserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _User_AssociateRole_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(RoleRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(UserServer).AddRole(ctx, in)
+		return srv.(UserServer).AssociateRole(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/proto.User/AddRole",
+		FullMethod: "/proto.User/AssociateRole",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServer).AddRole(ctx, req.(*RoleRequest))
+		return srv.(UserServer).AssociateRole(ctx, req.(*RoleRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -128,8 +256,24 @@ var User_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _User_AddUser_Handler,
 		},
 		{
-			MethodName: "AddRole",
-			Handler:    _User_AddRole_Handler,
+			MethodName: "UpdateRole",
+			Handler:    _User_UpdateRole_Handler,
+		},
+		{
+			MethodName: "ListFeature",
+			Handler:    _User_ListFeature_Handler,
+		},
+		{
+			MethodName: "DisableUser",
+			Handler:    _User_DisableUser_Handler,
+		},
+		{
+			MethodName: "EnableUser",
+			Handler:    _User_EnableUser_Handler,
+		},
+		{
+			MethodName: "AssociateRole",
+			Handler:    _User_AssociateRole_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

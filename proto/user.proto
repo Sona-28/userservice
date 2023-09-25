@@ -10,10 +10,31 @@ message AddRequest {
     string password = 3;
     string dob = 6;
     int64 phone = 5;
+    repeated string role = 7;
+    string status = 8;
 }
 
 message AddResponse {
     string message = 1;
+}
+
+message UserRequest {
+    string name = 1;
+}
+
+message UpdateRoleRequest {
+    string name = 1;
+    repeated string role = 2;
+}
+
+message ListRequest {
+    string role = 1;
+}
+
+message Role{
+    string role = 1;
+    string responsibility = 2;
+    string access = 3;
 }
 
 message RoleRequest {
@@ -23,5 +44,9 @@ message RoleRequest {
 
 service User{
     rpc AddUser (AddRequest) returns (AddResponse);
-    rpc AddRole (RoleRequest) returns (AddResponse);   
+    rpc UpdateRole (UpdateRoleRequest) returns (AddResponse);   
+    rpc ListFeature (ListRequest) returns (Role);
+    rpc DisableUser (UserRequest) returns (AddResponse);
+    rpc EnableUser (UserRequest) returns (AddResponse);
+    rpc AssociateRole (RoleRequest) returns (AddResponse);
 }
